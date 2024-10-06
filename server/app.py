@@ -2,6 +2,7 @@
 
 from flask import Flask, make_response, jsonify
 from flask_migrate import Migrate
+from sqlalchemy import desc 
 
 from models import db, Bakery, BakedGood
 
@@ -20,19 +21,27 @@ def index():
 
 @app.route('/bakeries')
 def bakeries():
-    return ''
+    bakeries= Bakery.query.all()
+    bakeries_list = [bakery.to_dict() for bakery in bakeries]
+    return make_response(jsonify(bakeries_list), 200)
 
 @app.route('/bakeries/<int:id>')
 def bakery_by_id(id):
-    return ''
+    bakery = Bakery.query.get(id)
+    bakery_dict = bakery.to_dict()
+    return make_response(jsonify(bakery_dict), 200)
 
 @app.route('/baked_goods/by_price')
 def baked_goods_by_price():
-    return ''
+    baked_goods =BakedGood.query.order_by(desc(BakedGood.price)).all()
+    baked_goods_list = [baked_good.to_dict() for baked_good in baked_goods]
+    return make_response(jsonify(baked_goods_list), 200)
 
 @app.route('/baked_goods/most_expensive')
 def most_expensive_baked_good():
-    return ''
+    most_expensive = BakedGood.query.order_by(desc(BakedGood.price)).first()
+    most_expensive_dict = most_expensive.to_dict()
+    return make_response(jsonify(most_expensive_dict), 200)
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
